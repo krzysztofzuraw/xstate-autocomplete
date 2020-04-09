@@ -8,30 +8,8 @@ import { Wrapper, Input, Card, List } from './components';
 
 const Root: FunctionComponent = () => {
   const [current, send] = useMachine(autocompleteMachine);
-  // const { results } = current.context;
-  console.log({ current });
-  const results = [
-    {
-      text: 'Ulica Henryka Sienkiewicza',
-      id: 1,
-      zipCode: '22-400',
-      place: 'Miasto Zamość',
-      region: 'Lubelskie',
-      country: 'Poland',
-      center: [0, 0] as const,
-      type: ['address'],
-    },
-    {
-      text: 'Ulica Henryka Sienkiewicza',
-      id: 2,
-      zipCode: '22-400',
-      place: 'Miasto Zamość',
-      region: 'Lubelskie',
-      country: 'Poland',
-      center: [0, 0] as const,
-      type: ['address'],
-    },
-  ];
+  const { results } = current.context;
+
   const [viewport, setViewport] = useState({
     width: '100%',
     height: '100%',

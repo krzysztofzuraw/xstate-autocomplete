@@ -15,20 +15,31 @@ const invokeAutocompleteQuery = (context: Context) => {
       query: context.querySubject.getValue(),
       mode: 'mapbox.places',
       countries: ['PL'],
-      limit: 10,
+      limit: 2,
       types: ['address'],
     })
     .send()
-    .then(response => response.body);
+    .then(response => transformReponse(response.body));
+};
+
+const transformReponse = (response: any) => {
+  return response.features.map(feature => ({
+    text: feature.text,
+    id: feature.id,
+    zipCode: feature.context.find(ctx => ctx.id.startsWith('postcode'))?.text ?? '',
+    place: feature.context.find(ctx => ctx.id.startsWith('place'))?.text ?? '',
+    region: feature.context.find(ctx => ctx.id.startsWith('region'))?.text ?? '',
+    country: feature.context.find(ctx => ctx.id.startsWith('country'))?.text ?? '',
+    center: feature.center,
+    type: feature.place_type,
+  }));
 };
 
 const debounceKeystrokes = (subject: BehaviorSubject<string>) =>
   subject.pipe(
     debounceTime(300),
     filter(value => value.length > 2),
-    map(value => {
-      return { type: 'STOPED', value };
-    })
+    map(value => ({ type: 'STOPED', value }))
   );
 
 type Context = {
@@ -77,7 +88,7 @@ export const autocompleteMachine = Machine<Context, Event>({
         onDone: {
           target: 'loaded',
           actions: assign({
-            results: (_context, event) => event.data.features,
+            results: (_context, event) => event.data,
           }),
         },
         onError: 'failed',

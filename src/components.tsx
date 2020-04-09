@@ -73,7 +73,7 @@ export const Card: FunctionComponent = ({ children }) => (
 );
 
 export const List: FunctionComponent<{ items: GeocodeResult[] }> = ({ items }) => (
-  <div className={classnames('p-4', 'flex', 'justify-center', 'items-center')}>
+  <div className={classnames('p-4', 'flex', 'justify-center', 'items-center', 'overflow-auto')}>
     {items.length !== 0 ? (
       <ul className={classnames('w-full', 'flex', 'justify-center', 'items-center', 'flex-col')}>
         {items.map(result => (
