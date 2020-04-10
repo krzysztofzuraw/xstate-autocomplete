@@ -15,7 +15,7 @@ const invokeAutocompleteQuery = (context: Context) => {
       query: context.querySubject.getValue(),
       mode: 'mapbox.places',
       countries: ['PL'],
-      limit: 2,
+      limit: 5,
       types: ['address'],
     })
     .send()

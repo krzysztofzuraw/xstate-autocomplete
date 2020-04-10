@@ -10,6 +10,8 @@ const Root: FunctionComponent = () => {
   const [current, send] = useMachine(autocompleteMachine);
   const { results } = current.context;
 
+  console.log({ value: current.value });
+
   const [viewport, setViewport] = useState({
     width: '100%',
     height: '100%',

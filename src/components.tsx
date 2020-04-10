@@ -1,5 +1,7 @@
 import { classnames, focus } from 'tailwindcss-classnames';
 import React, { FunctionComponent, FormEventHandler } from 'react';
+import Skeleton from 'react-loading-skeleton';
+
 import { GeocodeResult } from './models';
 
 export const Wrapper: FunctionComponent = ({ children }) => (
@@ -73,9 +75,9 @@ export const Card: FunctionComponent = ({ children }) => (
 );
 
 export const List: FunctionComponent<{ items: GeocodeResult[] }> = ({ items }) => (
-  <div className={classnames('p-4', 'flex', 'justify-center', 'items-center', 'overflow-auto')}>
+  <div className={classnames('p-4', 'flex', 'overflow-auto')}>
     {items.length !== 0 ? (
-      <ul className={classnames('w-full', 'flex', 'justify-center', 'items-center', 'flex-col')}>
+      <ul className={classnames('w-full', 'flex', 'flex-col')}>
         {items.map(result => (
           <li
             key={result.id}
@@ -127,8 +129,9 @@ export const List: FunctionComponent<{ items: GeocodeResult[] }> = ({ items }) =
               </div>
             </div>
             <div className={classnames('flex', 'items-baseline', 'mt-2')}>
-              {result.type.map(type => (
+              {result.type.map((type, idx) => (
                 <span
+                  key={`${type}-${idx}`}
                   className={classnames(
                     'text-xs',
                     'font-hairline',
@@ -152,7 +155,8 @@ export const List: FunctionComponent<{ items: GeocodeResult[] }> = ({ items }) =
           'font-thin',
           'tracking-wide',
           'leading-relaxed',
-          'text-gray-500'
+          'text-gray-500',
+          'm-auto'
         )}
       >
         Type address above to see the results
