@@ -1,6 +1,7 @@
 import { classnames, focus } from 'tailwindcss-classnames';
-import React, { FunctionComponent, FormEventHandler } from 'react';
-import Skeleton from 'react-loading-skeleton';
+import React, { FunctionComponent, FormEventHandler, useState } from 'react';
+import MapGL from 'react-map-gl';
+import useGeolocation from 'react-hook-geolocation';
 
 import { GeocodeResult } from './models';
 
@@ -164,3 +165,24 @@ export const List: FunctionComponent<{ items: GeocodeResult[] }> = ({ items }) =
     )}
   </div>
 );
+
+export const Map: React.FunctionComponent = () => {
+  const [viewport, setViewport] = useState({
+    latitude: 37.7577,
+    longitude: -122.4376,
+    zoom: 12,
+  });
+  useGeolocation({}, geolocation =>
+    setViewport({ ...viewport, latitude: geolocation.latitude, longitude: geolocation.longitude })
+  );
+  return (
+    <MapGL
+      {...viewport}
+      width="100%"
+      height="100%"
+      mapStyle="mapbox://styles/kzuraw/ck8hi7zg4078l1iohbssemlzu"
+      onViewportChange={setViewport}
+      mapboxApiAccessToken={process.env.MAPBOX_TOKEN}
+    />
+  );
+};
