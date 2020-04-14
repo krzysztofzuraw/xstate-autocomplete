@@ -1,6 +1,7 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
+  ignorePatterns: ['node_modules', 'dist', '.cache'],
   extends: [
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
