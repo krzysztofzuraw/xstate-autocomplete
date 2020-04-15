@@ -3,7 +3,7 @@ import geocodingClient from '@mapbox/mapbox-sdk/services/geocoding';
 import { BehaviorSubject } from 'rxjs';
 import { map, filter, debounceTime } from 'rxjs/operators';
 
-import { ForwardGeocodeResponse } from './models';
+import { MapboxResponse, GeocodeResult } from './models';
 
 const geocodingService = geocodingClient({
   accessToken: process.env.MAPBOX_TOKEN ?? '',
@@ -22,7 +22,7 @@ const invokeAutocompleteQuery = (context: Context) => {
     .then(response => transformReponse(response.body));
 };
 
-const transformReponse = (response: any) => {
+const transformReponse = (response: MapboxResponse): GeocodeResult[] => {
   return response.features.map(feature => ({
     text: feature.text,
     id: feature.id,
@@ -43,7 +43,7 @@ const debounceKeystrokes = (subject: BehaviorSubject<string>) =>
   );
 
 type Context = {
-  results: ForwardGeocodeResponse[];
+  results: GeocodeResult[];
   querySubject: BehaviorSubject<string>;
 };
 

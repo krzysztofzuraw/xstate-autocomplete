@@ -1,10 +1,5 @@
-export type ForwardGeocodeResponse = {
-  id: string;
-  matching_place_name: string;
-};
-
 export type GeocodeResult = {
-  id: number;
+  id: string;
   text: string;
   zipCode: string;
   place: string;
@@ -12,4 +7,14 @@ export type GeocodeResult = {
   country: string;
   center: readonly [number, number];
   type: string[];
+};
+
+export type MapboxResponse = {
+  features: {
+    text: string;
+    id: string;
+    context: { id: string; text: string }[];
+    center: [number, number];
+    place_type: string[];
+  }[];
 };
