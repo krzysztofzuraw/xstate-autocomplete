@@ -1,6 +1,6 @@
 import { classnames, focus } from 'tailwindcss-classnames';
-import React, { FunctionComponent, FormEventHandler, useState } from 'react';
-import MapGL from 'react-map-gl';
+import React, { FunctionComponent, FormEventHandler, useState, useEffect } from 'react';
+import MapGL, { Marker } from 'react-map-gl';
 import useGeolocation from 'react-hook-geolocation';
 
 import { GeocodeResult } from './models';
@@ -75,12 +75,16 @@ export const Card: FunctionComponent = ({ children }) => (
   </div>
 );
 
-export const List: FunctionComponent<{ items: GeocodeResult[] }> = ({ items }) => (
+export const List: FunctionComponent<{
+  items: GeocodeResult[];
+  onClick: (center: readonly [number, number]) => void;
+}> = ({ items, onClick }) => (
   <div className={classnames('p-4', 'flex', 'overflow-auto')}>
     {items.length !== 0 ? (
       <ul className={classnames('w-full', 'flex', 'flex-col')}>
         {items.map(result => (
           <li
+            onClick={() => onClick(result.center)}
             key={result.id}
             className={classnames(
               'border',
@@ -166,15 +170,22 @@ export const List: FunctionComponent<{ items: GeocodeResult[] }> = ({ items }) =
   </div>
 );
 
-export const Map: React.FunctionComponent = () => {
+export const Map: React.FunctionComponent<{ center: readonly [number, number] | null }> = ({
+  center,
+}) => {
   const [viewport, setViewport] = useState({
-    latitude: 37.7577,
-    longitude: -122.4376,
+    latitude: 51.107,
+    longitude: 17.038,
     zoom: 12,
   });
   useGeolocation({}, geolocation =>
     setViewport({ ...viewport, latitude: geolocation.latitude, longitude: geolocation.longitude })
   );
+  useEffect(() => {
+    if (center) {
+      setViewport({ ...viewport, latitude: center[1], longitude: center[0] });
+    }
+  }, [center]);
   return (
     <MapGL
       {...viewport}
@@ -183,6 +194,12 @@ export const Map: React.FunctionComponent = () => {
       mapStyle="mapbox://styles/kzuraw/ck8hi7zg4078l1iohbssemlzu"
       onViewportChange={setViewport}
       mapboxApiAccessToken={process.env.MAPBOX_TOKEN}
-    />
+    >
+      {center && (
+        <Marker longitude={center[0]} latitude={center[1]}>
+          PIN
+        </Marker>
+      )}
+    </MapGL>
   );
 };

@@ -19,10 +19,10 @@ const invokeAutocompleteQuery = (context: Context) => {
       types: ['address'],
     })
     .send()
-    .then(response => transformReponse(response.body));
+    .then(response => transformResponse(response.body));
 };
 
-const transformReponse = (response: MapboxResponse): GeocodeResult[] => {
+const transformResponse = (response: MapboxResponse): GeocodeResult[] => {
   return response.features.map(feature => ({
     text: feature.text,
     id: feature.id,
@@ -102,5 +102,38 @@ export const autocompleteMachine = Machine<Context, Event>({
       },
     },
     failed: {},
+  },
+});
+
+export const selectedPointMachine = Machine<
+  { center: null | readonly [number, number] },
+  { type: string; center: [number, number] }
+>({
+  id: 'selectedPointMachine',
+  context: {
+    center: null,
+  },
+  initial: 'idle',
+  states: {
+    idle: {
+      on: {
+        SELECTED: {
+          target: 'selected',
+          actions: assign({
+            center: (_context, event) => event.center,
+          }),
+        },
+      },
+    },
+    selected: {
+      on: {
+        SELECTED: {
+          target: 'selected',
+          actions: assign({
+            center: (_context, event) => event.center,
+          }),
+        },
+      },
+    },
   },
 });
