@@ -92,7 +92,8 @@ export const List: FunctionComponent<{
               'p-5',
               'rounded-lg',
               'shadow-lg',
-              'mb-4'
+              'mb-4',
+              'cursor-pointer'
             )}
           >
             <div className={classnames('flex', 'items-baseline', 'justify-between', 'my-3')}>
@@ -196,10 +197,27 @@ export const Map: React.FunctionComponent<{ center: readonly [number, number] | 
       mapboxApiAccessToken={process.env.MAPBOX_TOKEN}
     >
       {center && (
-        <Marker longitude={center[0]} latitude={center[1]}>
-          PIN
+        <Marker longitude={center[0]} latitude={center[1]} offsetLeft={-20} offsetTop={-20}>
+          <Point />
         </Marker>
       )}
     </MapGL>
+  );
+};
+
+const Point: React.FunctionComponent = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      x="0px"
+      y="0px"
+      height="40px"
+      width="40px"
+      viewBox="0 0 36 45"
+      xmlSpace="preserve"
+    >
+      <path d="M9.5,29.5c0,2.27,4.38,3.5,8.5,3.5s8.5-1.23,8.5-3.5c0-2.18-4.03-3.4-8-3.49V15.97c3.35-0.26,6-3.06,6-6.47  C24.5,5.92,21.58,3,18,3s-6.5,2.92-6.5,6.5c0,3.42,2.65,6.22,6,6.47v10.03C13.53,26.1,9.5,27.32,9.5,29.5z M12.5,9.5  C12.5,6.47,14.97,4,18,4s5.5,2.47,5.5,5.5S21.03,15,18,15S12.5,12.53,12.5,9.5z M18,30c0.28,0,0.5-0.22,0.5-0.5v-2.49  c4.04,0.1,7,1.36,7,2.49c0,1.18-3.21,2.5-7.5,2.5s-7.5-1.32-7.5-2.5c0-1.13,2.96-2.39,7-2.49v2.49C17.5,29.78,17.72,30,18,30z" />
+    </svg>
   );
 };
