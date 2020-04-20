@@ -1,15 +1,11 @@
 import { Machine, assign } from 'xstate';
-import geocodingClient from '@mapbox/mapbox-sdk/services/geocoding';
+import geocodingClient, { GeocodeService } from '@mapbox/mapbox-sdk/services/geocoding';
 import { BehaviorSubject } from 'rxjs';
 import { map, filter, debounceTime } from 'rxjs/operators';
 
 import { MapboxResponse, GeocodeResult } from './models';
 
-const geocodingService = geocodingClient({
-  accessToken: process.env.MAPBOX_TOKEN ?? '',
-});
-
-const invokeAutocompleteQuery = (context: Context) => {
+const fetchGeocodingService = (context: Context, geocodingService: GeocodeService) => {
   return geocodingService
     .forwardGeocode({
       query: context.querySubject.getValue(),
@@ -42,68 +38,82 @@ const debounceKeystrokes = (subject: BehaviorSubject<string>) =>
     map(value => ({ type: 'STOPED', value }))
   );
 
-type Context = {
+export type Context = {
   results: GeocodeResult[];
   querySubject: BehaviorSubject<string>;
 };
 
 type Event = {
   type: string;
+  // fix typing here
   query: string;
   features: string[];
 };
 
-export const autocompleteMachine = Machine<Context, Event>({
-  id: 'autocomplete',
-  initial: 'idle',
-  context: {
-    results: [],
-    querySubject: new BehaviorSubject(''),
+export const autocompleteMachine = Machine<Context, Event>(
+  {
+    id: 'autocomplete',
+    initial: 'idle',
+    context: {
+      results: [],
+      querySubject: new BehaviorSubject(''),
+    },
+    states: {
+      idle: {
+        on: {
+          KEYSTROKE: {
+            target: 'startedTyping',
+          },
+        },
+      },
+      startedTyping: {
+        on: {
+          KEYSTROKE: {
+            actions: (context, event) => context.querySubject.next(event.query),
+          },
+          STOPED: {
+            target: 'stopedTyping',
+          },
+        },
+        invoke: {
+          src: context => debounceKeystrokes(context.querySubject),
+        },
+      },
+      stopedTyping: {
+        invoke: {
+          id: 'autocomplete-query',
+          src: 'geocodeQuery',
+          onDone: {
+            target: 'loaded',
+            actions: assign({
+              results: (_context, event) => event.data,
+            }),
+          },
+          onError: 'failed',
+        },
+      },
+      loaded: {
+        on: {
+          KEYSTROKE: {
+            target: 'idle',
+          },
+        },
+      },
+      failed: {},
+    },
   },
-  states: {
-    idle: {
-      on: {
-        KEYSTROKE: {
-          target: 'startedTyping',
-        },
-      },
+  {
+    services: {
+      geocodeQuery: context =>
+        fetchGeocodingService(
+          context,
+          geocodingClient({
+            accessToken: process.env.MAPBOX_TOKEN || '',
+          })
+        ),
     },
-    startedTyping: {
-      on: {
-        KEYSTROKE: {
-          actions: (context, event) => context.querySubject.next(event.query),
-        },
-        STOPED: {
-          target: 'stopedTyping',
-        },
-      },
-      invoke: {
-        src: context => debounceKeystrokes(context.querySubject),
-      },
-    },
-    stopedTyping: {
-      invoke: {
-        id: 'autocomplete-query',
-        src: invokeAutocompleteQuery,
-        onDone: {
-          target: 'loaded',
-          actions: assign({
-            results: (_context, event) => event.data,
-          }),
-        },
-        onError: 'failed',
-      },
-    },
-    loaded: {
-      on: {
-        KEYSTROKE: {
-          target: 'idle',
-        },
-      },
-    },
-    failed: {},
-  },
-});
+  }
+);
 
 export const selectedPointMachine = Machine<
   { center: null | readonly [number, number] },
