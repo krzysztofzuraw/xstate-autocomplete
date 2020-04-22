@@ -5,7 +5,7 @@ import { map, filter, debounceTime } from 'rxjs/operators';
 
 import { MapboxResponse, GeocodeResult } from './models';
 
-const fetchGeocodingService = (context: Context, geocodingService: GeocodeService) => {
+const fetchGeocodingService = (context: AutoCompleteContext, geocodingService: GeocodeService) => {
   return geocodingService
     .forwardGeocode({
       query: context.querySubject.getValue(),
@@ -38,19 +38,14 @@ const debounceKeystrokes = (subject: BehaviorSubject<string>) =>
     map(value => ({ type: 'STOPED', value }))
   );
 
-export type Context = {
+export type AutoCompleteContext = {
   results: GeocodeResult[];
   querySubject: BehaviorSubject<string>;
 };
 
-type Event = {
-  type: string;
-  // fix typing here
-  query: string;
-  features: string[];
-};
+type AutocompleteEvent = { type: 'KEYSTROKE'; query: string } | { type: 'STOPPED' };
 
-export const autocompleteMachine = Machine<Context, Event>(
+export const autocompleteMachine = Machine<AutoCompleteContext, AutocompleteEvent>(
   {
     id: 'autocomplete',
     initial: 'idle',
@@ -71,7 +66,7 @@ export const autocompleteMachine = Machine<Context, Event>(
           KEYSTROKE: {
             actions: (context, event) => context.querySubject.next(event.query),
           },
-          STOPED: {
+          STOPPED: {
             target: 'stopedTyping',
           },
         },
@@ -115,10 +110,10 @@ export const autocompleteMachine = Machine<Context, Event>(
   }
 );
 
-export const selectedPointMachine = Machine<
-  { center: null | readonly [number, number] },
-  { type: string; center: [number, number] }
->({
+type SelectedPointContext = { center: null | readonly [number, number] };
+type SelectedPointEvent = { type: 'SELECTED'; center: readonly [number, number] };
+
+export const selectedPointMachine = Machine<SelectedPointContext, SelectedPointEvent>({
   id: 'selectedPointMachine',
   context: {
     center: null,

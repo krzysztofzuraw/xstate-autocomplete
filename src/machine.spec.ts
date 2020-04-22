@@ -1,7 +1,7 @@
 import { interpret } from 'xstate';
 
-import { autocompleteMachine, Context } from './machine';
 import { GeocodeResult } from './models';
+import { autocompleteMachine, selectedPointMachine, AutoCompleteContext } from './machine';
 
 const mockedRespnse: GeocodeResult = {
   text: 'henryka',
@@ -14,7 +14,7 @@ const mockedRespnse: GeocodeResult = {
   type: ['address'],
 };
 
-const mockFetchGeocodingService = async (_context: Context, _service: {}) => {
+const mockFetchGeocodingService = async (_context: AutoCompleteContext, _service: {}) => {
   return [mockedRespnse];
 };
 
@@ -37,6 +37,20 @@ describe('autocompleteMachine', () => {
     autocompleteService.send('KEYSTROKE', { query: 'h' });
     autocompleteService.send('KEYSTROKE', { query: 'e' });
     autocompleteService.send('KEYSTROKE', { query: 'n' });
-    autocompleteService.send('STOPED');
+    autocompleteService.send('STOPPED');
+  });
+});
+
+describe('selectedPointMachine', () => {
+  it('should assign center when user selects the point', () => {
+    const selectedPointService = interpret(selectedPointMachine)
+      .onTransition(state => {
+        if (state.matches('selected')) {
+          expect(state.context.center).toEqual([42, 42]);
+        }
+      })
+      .start();
+
+    selectedPointService.send('SELECTED', { center: [42, 42] });
   });
 });
