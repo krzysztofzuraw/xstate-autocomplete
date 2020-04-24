@@ -3,7 +3,7 @@ import React, { FunctionComponent } from 'react';
 import { useMachine } from '@xstate/react';
 
 import { autocompleteMachine, selectedPointMachine } from './machine';
-import { Wrapper, Input, Card, List, Map } from './components';
+import { Wrapper, Input, Card, List, Map, Footer } from './components';
 
 const Root: FunctionComponent = () => {
   const [autocompleteState, sendEventToAutocompleteMachine] = useMachine(autocompleteMachine);
@@ -22,6 +22,7 @@ const Root: FunctionComponent = () => {
         <List items={results} onClick={center => sendEventToPointMachine('SELECTED', { center })} />
         <Map center={center} />
       </Card>
+      <Footer />
     </Wrapper>
   );
 };

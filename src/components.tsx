@@ -13,7 +13,7 @@ export const Wrapper: FunctionComponent = ({ children }) => (
       'h-screen',
       'grid' as any,
       'gap-1' as any,
-      'grid-rows-4' as any,
+      'grid-rows-5' as any,
       'grid-flow-col' as any
     )}
   >
@@ -221,3 +221,21 @@ const Point: React.FunctionComponent = () => {
     </svg>
   );
 };
+
+export const Footer: React.FunctionComponent = () => (
+  <div className={classnames('flex', 'justify-center', 'items-center')}>
+    <p>
+      Source code on{' '}
+      <a
+        className={classnames('text-blue-600')}
+        href="https://github.com/krzysztofzuraw/xstate-autocomplete"
+      >
+        GitHub
+      </a>{' '}
+      - created by{' '}
+      <a className={classnames('text-blue-600')} href="https://krzysztofzuraw.com/">
+        Krzysztof Żuraw
+      </a>
+    </p>
+  </div>
+);
