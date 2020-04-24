@@ -1,6 +1,13 @@
+<div align="center">
+
 # Xstate Autocomplete
 
 Xstate example with Autocomplete
+
+[**Show your support by giving a ⭐**](https://github.com/krzysztofzuraw/xstate-autocomplete/stargazers)
+<br/><hr/>
+
+</div>
 
 ## Prerequisites
 

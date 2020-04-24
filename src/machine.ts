@@ -35,7 +35,7 @@ const debounceKeystrokes = (subject: BehaviorSubject<string>) =>
   subject.pipe(
     debounceTime(300),
     filter(value => value.length > 2),
-    map(value => ({ type: 'STOPED', value }))
+    map<string, AutocompleteEvent>(value => ({ type: 'STOPPED', value }))
   );
 
 export type AutoCompleteContext = {
