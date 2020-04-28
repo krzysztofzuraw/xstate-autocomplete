@@ -60,4 +60,4 @@ Maker icon created by worker from [Noun Project](https://thenounproject.com/sear
 
 ## Contributing and Issues
 
-Please feel free to contribute or file issues, and refer to the corresponding documents within the root of the repository for information pertaining to the above.
+Please feel free to contribute or file issues 🎉
